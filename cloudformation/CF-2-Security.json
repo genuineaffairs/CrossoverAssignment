@@ -1,0 +1,149 @@
+{
+	"AWSTemplateFormatVersion": "2010-09-09",
+	"Description": "This template creates baseline security groups required",
+	"Parameters": {
+		"VpcId": {
+			"Type": "AWS::EC2::VPC::Id",
+			"Description": "The VPC ID to create the security groups in"
+		},
+		"VpcCidr": {
+			"Description": "VPC Network Block (CIDR)",
+			"Default": "10.0.0.0/20",
+			"MinLength": "9",
+			"MaxLength": "18",
+			"AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+			"Type": "String"
+		},
+        "WebHttpsAllowCidr": {
+			"Description": "Network block (CIDR) to allow HTTPS access for application, Default: World.",
+			"Default": "0.0.0.0/0",
+			"MinLength": "9",
+			"MaxLength": "18",
+			"AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+			"Type": "String"
+		},
+        "SshAllowCidr": {
+			"Description": "Network block (CIDR) to allow SSH access for application",
+			"Default": "10.0.0.0/32",
+			"MinLength": "9",
+			"MaxLength": "18",
+			"AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+			"Type": "String"
+		}
+
+
+	},
+	"Resources": {
+      "WebSecurityGroup": {
+        "Type": "AWS::EC2::SecurityGroup",
+        "Properties": {
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "SG",
+                    "ELB",
+                    "Web",
+                    "HTTPS"
+                  ]
+                ]
+              }
+            }
+          ],
+          "GroupDescription": "HTTPS Access to Web Tier",
+          "VpcId": {
+            "Ref": "VpcId"
+          },
+          "SecurityGroupIngress": [
+            {
+              "IpProtocol": "tcp",
+              "ToPort": "443",
+              "FromPort": "443",
+              "CidrIp": {
+                "Ref": "WebHttpsAllowCidr"
+              }
+            }
+          ]
+        }
+      },
+      "WebInstanceSecurityGroup": {
+        "Type": "AWS::EC2::SecurityGroup",
+        "DependsOn": [
+          "WebSecurityGroup"
+        ],
+        "Properties": {
+          "GroupDescription": "Local security group for Web Tier",
+          "VpcId": {
+            "Ref": "VpcId"
+          },
+          "SecurityGroupIngress": [
+            {
+              "FromPort": "443",
+              "ToPort": "443",
+              "IpProtocol": "tcp",
+              "SourceSecurityGroupId": {
+                "Ref": "WebSecurityGroup"
+              }
+            }
+          ]
+        }
+      },
+      "JumpBoxSecurityGroup": {
+        "Type": "AWS::EC2::SecurityGroup",
+        "Properties": {
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "SG",
+                    "JumpBox",
+                    "SSH"
+                  ]
+                ]
+              }
+            }
+          ],
+          "GroupDescription": "SSH Access to JumpBox",
+          "VpcId": {
+            "Ref": "VpcId"
+          },
+          "SecurityGroupIngress": [
+            {
+              "IpProtocol": "tcp",
+              "ToPort": "22",
+              "FromPort": "22",
+              "CidrIp": {
+                "Ref": "SshAllowCidr"
+              }
+            }
+          ]
+        }
+      }
+    },
+	"Outputs": {
+		"WebSecurityGroupOutput": {
+			"Description": "Security group ID for Web Tier ELB.",
+			"Value": {
+				"Ref": "WebSecurityGroup"
+			}
+		},
+		"WebInstanceSecurityGroupOutput": {
+			"Description": "Security group ID for Web Tier Instance.",
+			"Value": {
+				"Ref": "WebInstanceSecurityGroup"
+			}
+		},
+		"JumpBoxSecurityGroupOutput": {
+			"Description": "Security group ID for Jump Box Instance.",
+			"Value": {
+				"Ref": "JumpBoxSecurityGroup"
+			}
+		}
+	}
+}
