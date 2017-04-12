@@ -63,11 +63,15 @@ template "#{node['mybb']['deployment_path_inc']}/config.php" do
   action :create
 end
 
-file "#{node['mybb']['deployment_path']}/install/lock" do
-  mode '0755'
-  owner 'root'
-  group 'root'
-  action :touch
+bash 'deploy_theme' do
+  code <<-EOH
+    curl -X POST -F 'action=templates' http://localhost/install/index.php
+    EOH
+end
+
+directory "#{node['mybb']['deployment_path']}/install" do
+  recursive true
+  action :delete
 end
 
 service "httpd" do
