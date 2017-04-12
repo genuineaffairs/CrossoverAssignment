@@ -4,6 +4,12 @@
 #
 # Copyright:: 2017, The Authors, All Rights Reserved.
 
+dbuser = node['mybb']['dbuser']
+dbpass = node['mybb']['dbpass']
+dbhost = node['mybb']['dbhost']
+dbport = node['mybb']['dbport']
+dbname = node['mybb']['dbname']
+schema_file = node['mybb']['schema_file']
 
 bash 'set_schema' do
   cwd '/tmp'
