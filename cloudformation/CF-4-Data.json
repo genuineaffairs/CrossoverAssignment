@@ -51,7 +51,7 @@
       "MaxValue": "1024",
     },
     "DbName": {
-      "Default": "mybb_db",
+      "Default": "mybbdbname",
       "Description": "The MyBB database name",
       "Type": "String"
     },
