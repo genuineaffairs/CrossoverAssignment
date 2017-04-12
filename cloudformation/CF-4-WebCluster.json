@@ -71,9 +71,13 @@
       "Type": "String",
       "Description": "Amount of instances to set initial scaling group to"
     },
-    "SubnetIds": {
+    "WebSubnetIds": {
       "Type": "List<AWS::EC2::Subnet::Id>",
       "Description": "Web Subnet IDs"
+    },
+    "PublicSubnetIds": {
+      "Type": "List<AWS::EC2::Subnet::Id>",
+      "Description": "Public Subnet IDs"
     },
     "InstanceName": {
       "Type": "String",
@@ -84,12 +88,25 @@
       "Type": "AWS::EC2::VPC::Id",
       "Description": "The VPC ID holding Subnets specified above."
     },
-    "WebElbSecurityGroup": {
-      "Type": "String",
-      "Description": "ELB SG for Web Tier"
+   "WebHttpsAllowCidr": {
+     "Description": "Network block (CIDR) to allow HTTPS access for application, Default: World.",
+     "Default": "0.0.0.0/0",
+     "MinLength": "9",
+     "MaxLength": "18",
+     "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+     "Type": "String"
+   },
+    "SshSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup::Id",
+      "Description": "Client SSH SG"
+    },
+    "DbSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup::Id",
+      "Description": "Client DB SG"
     },
     "DbName": {
       "Type": "String",
+      "Default": "mybbdb",
       "Description": "Database Name"
     },
     "DbHost": {
@@ -171,8 +188,52 @@
     }
   },
   "Resources": {
+    "WebSecurityGroup": {
+        "Type": "AWS::EC2::SecurityGroup",
+        "Properties": {
+          "Tags": [
+            {
+              "Key": "Name",
+              "Value": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "SG",
+                    "ELB",
+                    "Web",
+                    "HTTPS"
+                  ]
+                ]
+              }
+            }
+          ],
+          "GroupDescription": "HTTPS Access to Web Tier",
+          "VpcId": {
+            "Ref": "VpcId"
+          },
+          "SecurityGroupIngress": [
+            {
+              "IpProtocol": "tcp",
+              "ToPort": "443",
+              "FromPort": "443",
+              "CidrIp": {
+                "Ref": "WebHttpsAllowCidr"
+              }
+            },
+            {
+              "IpProtocol": "tcp",
+              "ToPort": "80",
+              "FromPort": "80",
+              "CidrIp": {
+                "Ref": "WebHttpsAllowCidr"
+              }
+            }
+          ]
+        }
+      },
     "WebInstanceSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
+      "DependsOn": ["WebSecurityGroup"],
       "Properties": {
         "GroupDescription": "Local security group for Web Tier",
         "VpcId": {
@@ -184,7 +245,7 @@
             "ToPort": "80",
             "IpProtocol": "tcp",
             "SourceSecurityGroupId": {
-              "Ref": "WebElbSecurityGroup"
+              "Ref": "WebSecurityGroup"
             }
           },
           {
@@ -192,7 +253,7 @@
             "ToPort": "443",
             "IpProtocol": "tcp",
             "SourceSecurityGroupId": {
-              "Ref": "WebElbSecurityGroup"
+              "Ref": "WebSecurityGroup"
             }
           }
         ]
@@ -200,15 +261,16 @@
     },
     "WebElasticLoadBalancer": {
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "DependsOn": ["WebSecurityGroup"],
       "Properties": {
         "CrossZone": "true",
         "SecurityGroups": [
           {
-            "Ref": "WebElbSecurityGroup"
+            "Ref": "WebSecurityGroup"
           }
         ],
         "Subnets": {
-          "Ref": "SubnetIds"
+          "Ref": "PublicSubnetIds"
         },
         "LBCookieStickinessPolicy": [
           {
@@ -272,7 +334,7 @@
           }
         ],
         "VPCZoneIdentifier": {
-          "Ref": "SubnetIds"
+          "Ref": "WebSubnetIds"
         },
         "LaunchConfigurationName": {
           "Ref": "WebServerLaunchConfig"
@@ -547,6 +609,12 @@
           "SecurityGroups": [
             {
               "Ref": "WebInstanceSecurityGroup"
+            },
+            {
+              "Ref": "SshSecurityGroup"
+            },
+            {
+              "Ref": "DbSecurityGroup"
             }
           ],
           "InstanceType": {
@@ -577,8 +645,9 @@
                   "\n",
                   "# Run \n",
                   "/bin/mkdir -p /etc/chef && /bin/cp -r /tmp/deployment/cookbooks /etc/chef\n",
-                  "/usr/bin/curl -L https://www.opscode.com/chef/install.sh | sudo bash\n",
+                  "/usr/bin/curl -L https://www.opscode.com/chef/install.sh | bash\n",
                   "/usr/bin/chef-solo -c /tmp/solo.rb -j /tmp/deployment.json\n",
+                  "\n",
                   "# Signal \n",
                   "/opt/aws/bin/cfn-signal -e $? ",
                   "    --stack ",
@@ -597,5 +666,11 @@
           }
         }
       }
+    },
+  "Outputs" : {
+    "DnsName": {
+      "Description": "Application HTTP Address",
+      "Value": { "Fn::GetAtt": [ "WebElasticLoadBalancer", "DNSName" ] }
     }
   }
+}

@@ -41,17 +41,17 @@
         "db.t2.small",
         "db.t2.medium",
         "db.t2.large"
-      ],
+      ]
     },
     "DbAllocatedStorage": {
       "Default": "5",
       "Description": "DB Size in GB",
       "Type": "Number",
       "MinValue": "5",
-      "MaxValue": "1024",
+      "MaxValue": "1024"
     },
     "DbName": {
-      "Default": "mybbdbname",
+      "Default": "mybbdb",
       "Description": "The MyBB database name",
       "Type": "String"
     },
@@ -75,10 +75,6 @@
       "MaxLength": "41",
       "AllowedPattern": "[a-zA-Z0-9]+"
     },
-    "WebInstanceSecurityGroup": {
-      "Type": "String",
-      "Description": "Web Tier Instance Security Group"
-    },
     "VpcId": {
       "Type": "AWS::EC2::VPC::Id",
       "Description": "The VPC ID holding Subnets specified above."
@@ -91,15 +87,24 @@
           "Type": "AWS::EC2::SecurityGroup",
           "Properties" : {
             "GroupDescription": "Database Security Group",
-            "SecurityGroupIngress" : [{
-              "IpProtocol" : "tcp",
-              "FromPort" : "3306",
-              "ToPort" : "3306",
-              "SourceSecurityGroupId" : { "Ref" : "WebInstanceSecurityGroup" }
-            }],
             "VpcId" : { "Ref" : "VpcId" }
           }
         },
+    "DatabaseSecurityGroupIngress": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "DependsOn": ["DatabaseSecurityGroup"],
+      "Properties": {
+        "GroupId": {
+          "Ref": "DatabaseSecurityGroup"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "3306",
+        "ToPort": "3306",
+        "SourceSecurityGroupId": {
+          "Ref": "DatabaseSecurityGroup"
+        }
+      }
+    },
 
     "DbSubnetGroup" : {
       "Type" : "AWS::RDS::DBSubnetGroup",
@@ -129,6 +134,10 @@
     "RdsEndpoint": {
       "Description": "RDS Endpoint",
       "Value": { "Fn::GetAtt": [ "MysqlRdsInstance", "Endpoint.Address" ] }
+    },
+    "DbSecurityGroup": {
+      "Description": "DB SG ID",
+      "Value": { "Fn::GetAtt": [ "DatabaseSecurityGroup", "GroupId" ] }
     }
   }
 }

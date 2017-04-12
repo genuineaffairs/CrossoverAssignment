@@ -63,6 +63,13 @@ template "#{node['mybb']['deployment_path_inc']}/config.php" do
   action :create
 end
 
+file "#{node['mybb']['deployment_path']/lock" do
+  mode '0755'
+  owner 'root'
+  group 'root'
+  action :touch
+end
+
 service "httpd" do
   action [:enable, :restart]
 end
