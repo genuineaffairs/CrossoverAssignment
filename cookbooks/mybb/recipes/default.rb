@@ -47,7 +47,7 @@ bash 'extract' do
 end
 
 
-template node['mybb']['deployment_path']['inc']/settings.php do
+template "#{node['mybb']['deployment_path_inc']}/settings.php" do
   source 'settings.php.erb'
   owner 'root'
   group 'root'
@@ -55,10 +55,14 @@ template node['mybb']['deployment_path']['inc']/settings.php do
   action :create
 end
 
-template node['mybb']['deployment_path']['inc']/config.php do
+template "#{node['mybb']['deployment_path_inc']}/config.php" do
   source 'config.php.erb'
   owner 'root'
   group 'root'
   mode '0666'
   action :create
+end
+
+service "httpd" do
+  action [:enable, :restart]
 end

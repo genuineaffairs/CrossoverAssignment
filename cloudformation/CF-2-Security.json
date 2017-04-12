@@ -65,32 +65,19 @@
               "CidrIp": {
                 "Ref": "WebHttpsAllowCidr"
               }
-            }
-          ]
-        }
-      },
-      "WebInstanceSecurityGroup": {
-        "Type": "AWS::EC2::SecurityGroup",
-        "DependsOn": [
-          "WebSecurityGroup"
-        ],
-        "Properties": {
-          "GroupDescription": "Local security group for Web Tier",
-          "VpcId": {
-            "Ref": "VpcId"
-          },
-          "SecurityGroupIngress": [
+            },
             {
-              "FromPort": "443",
-              "ToPort": "443",
               "IpProtocol": "tcp",
-              "SourceSecurityGroupId": {
-                "Ref": "WebSecurityGroup"
+              "ToPort": "80",
+              "FromPort": "80",
+              "CidrIp": {
+                "Ref": "WebHttpsAllowCidr"
               }
             }
           ]
         }
       },
+
       "JumpBoxSecurityGroup": {
         "Type": "AWS::EC2::SecurityGroup",
         "Properties": {

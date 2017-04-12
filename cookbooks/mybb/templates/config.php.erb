@@ -8,12 +8,12 @@
  */
 
 $config['database']['type'] = 'mysql';
-$config['database']['database'] = <%= "#{node['mybb']['dbname']}"%>;
+$config['database']['database'] = '<%= node['mybb']['dbname'] %>';
 $config['database']['table_prefix'] = 'mybb_';
 
-$config['database']['hostname'] = <%= "#{node['mybb']['dbhost']}:#{node['mybb']['dbport'}%>";
-$config['database']['username'] = <%= "#{node['mybb']['dbuser']}%>";
-$config['database']['password'] = <%= "#{node['mybb']['dbpass']}%>";
+$config['database']['hostname'] = '<%= "#{node['mybb']['dbhost']}:#{node['mybb']['dbport']}" %>';
+$config['database']['username'] = '<%= node['mybb']['dbuser'] %>';
+$config['database']['password'] = '<%= node['mybb']['dbpass'] %>';
 
 /**
  * Admin CP directory
