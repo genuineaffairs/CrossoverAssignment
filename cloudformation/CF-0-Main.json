@@ -105,6 +105,11 @@
 			"AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
 			"Type": "String"
 		},
+		"pDatadogApiKey": {
+			"Default": "1a713ba658695272bc429eb16aef13cd",
+			"Description": "Datadog Agent API Key",
+			"Type": "String"
+		},
 		"pKeyName": {
 			"Type": "AWS::EC2::KeyPair::KeyName",
 			"Description": "The SSH key name"
@@ -458,6 +463,9 @@
 					},
 					"AdminEmail": {
 						"Ref": "pAdminEmail"
+					},
+					"DatadogApiKey": {
+						"Ref": "pDatadogApiKey"
 					}
 				},
 				"TemplateURL": {

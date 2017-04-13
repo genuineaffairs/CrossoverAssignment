@@ -23,8 +23,5 @@ default['mybb']['dbpass']
         "dbuser": "dbadmin",
         "dbpass": "q1w2e3r3"
     },
-    "datadog": {
-        "apikey": "1a713ba658695272bc429eb16aef13cd"
-    },
-  "run_list": [ "recipe[mybb::default]", "recipe[datadog::default]"]
+  "run_list": [ "recipe[mybb::default]" ]
 }

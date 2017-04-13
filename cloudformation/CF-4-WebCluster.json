@@ -132,6 +132,11 @@
       "Type": "String",
       "Default": "Admin@company.com",
       "Description": "Email Address of Administrator"
+    },
+    "DatadogApiKey": {
+      "Default": "1a713ba658695272bc429eb16aef13cd",
+      "Description": "Datadog Agent API Key",
+      "Type": "String"
     }
   },
   "Mappings" : {
@@ -591,7 +596,12 @@
                         "Ref": "DbPass"
                       },
                       "\"},",
-                      "\"run_list\": [ \"recipe[mybb::default]\" ]}"
+                      "\"datadog\": {\"apikey\": \"",
+                      {
+                        "Ref": "DatadogApiKey"
+                      },
+                      "\"},",
+                      "\"run_list\": [ \"recipe[mybb::default]\", \"recipe[datadog::default]\" ]}"
                     ]
                   ]
                 },
