@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>MyBB Management Application</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="./CSS/main.css" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-offset-4 col-xs-4 col-sm-offset-4 col-sm-3 col-md-offset-5 col-md-2 pagination-centered text-center">
+          <h1>MyBB Admin</h1>
+        </div>
+      </div>
+      <div class="row">
+        <div id="main-stack" class="col-xs-offset-40 col-xs-40 col-sm-offset-40 col-sm-30 col-md-offset-50 col-md-20">
+
+          <p><h2>Main Stack</h2><h4>Application:</h4><span id="app_endpoint"></span><br><h4>Stack ID: </h4><span id="main_stack_id">
+        </span><h4>Parameters:</h4>
+
+            <ul id="param_list_main"></ul>
+
+            <button id="btn-modify"  class="btn btn-primary" onclick="getStack()">Modify</button>
+            <button id="btn-refresh"  class="btn btn-primary" onclick="modifyStack()">Refresh</button>
+
+        </div>
+        <div id="network-stack" class="col-xs-offset-40 col-xs-40 col-sm-offset-40 col-sm-30 col-md-offset-50 col-md-20">
+          <p><h2>Network Stack</h2></p>
+            <h4>Stack ID: </h4><span id="network_stack_id"></span><br><h4>Parameters: </h4>
+
+            <ul id="param_list_network"></ul>
+            <h4>Outputs: </h4>
+            <ul id="out_list_network"></ul>
+          <input id="btn-show" type="button" class="btn btn-primary" value='Modify'>
+            <button id="btn-refresh"  class="btn btn-primary" onclick="getStack()">Refresh</button>
+
+        </div>
+        <div id="jumpbox-stack" class="col-xs-offset-40 col-xs-40 col-sm-offset-40 col-sm-30 col-md-offset-50 col-md-20">
+          <p><h2>JumpBox Stack</h2></span></p>
+          <h4>Stack ID: </h4><span id="jumpbox_stack_id"></span><br><h4>Parameters: </h4>
+            <ul id="param_list_jumpbox"></ul>
+          <h4>Outputs: </h4>
+
+            <ul id="out_list_jumpbox"></ul>
+          <input id="btn-show" type="button" class="btn btn-primary" value='Modify'>
+            <button id="btn-refresh"  class="btn btn-primary" onclick="getStack()">Refresh</button>
+        </div>
+        <div id="data-stack" class="col-xs-offset-40 col-xs-40 col-sm-offset-40 col-sm-30 col-md-offset-50 col-md-20">
+          <p><h2>Data Stack</h2></span></p>
+          <h4>Stack ID: </h4><span id="data_stack_id"></span><br><h4>Parameters: </h4>
+            <ul id="param_list_data"></ul>
+          <h4>Outputs:</h4>
+            <ul id="out_list_data"></ul>
+          <input id="btn-show" type="button" class="btn btn-primary" value='Modify'>
+            <button id="btn-refresh"  class="btn btn-primary" onclick="getStack()">Refresh</button>
+        </div>
+        <div id="web-stack" class="col-xs-offset-40 col-xs-40 col-sm-offset-40 col-sm-30 col-md-offset-50 col-md-20">
+          <p><h2>Web Stack</h2></span></p>
+          <h4>Stack ID: </h4><span id="web_stack_id"></span><br><h4>Parameters: </h4>
+
+            <ul id="param_list_web"></ul>
+          <h4>Outputs: </h4>
+            <ul id="out_list_web"></ul>
+          <input id="btn-show" type="button" class="btn btn-primary" value='Modify'>
+            <button id="btn-refresh"  class="btn btn-primary" onclick="getStack()">Refresh</button>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="./JS/main.js"></script>
+    <script src="./JS/stackProvider.js"></script>
+  </body>
+</html>

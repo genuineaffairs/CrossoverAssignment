@@ -308,7 +308,7 @@
         "Tags": [
           {
             "Key": "Name",
-            "Value": "WebServer",
+            "Value": {"Ref": "InstanceName"},
             "PropagateAtLaunch": "true"
           }
         ],

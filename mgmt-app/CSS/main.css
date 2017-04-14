@@ -1,0 +1,22 @@
+input[type=button] {
+    margin: 10px 0px;
+}
+
+p {
+ margin: 10px 0px;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+label, input {
+    display: block;
+}
+
+label {
+    margin-bottom: 10px;
+    font-weight: normal !important;
+}
+input[type="text"]:disabled{background-color:lightgrey;}
+input[type="text"]:enabled{background-color:lightgreen;}
